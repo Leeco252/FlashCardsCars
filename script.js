@@ -1,7 +1,7 @@
 function criaCartao(categoria, pergunta, resposta) {
   const pista = document.getElementById('pista'); 
 
-  const cartao = document.createElement('div');  
+  const cartao = document.createElement('div');   
   cartao.className = 'cartao-turbo';
 
   cartao.innerHTML = `
