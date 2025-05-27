@@ -1,9 +1,140 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Flashcards - Oficina Turbo</title>
-  <link rel="stylesheet" href="style.css">
+  <style>
+    :root {
+      --cor-texto: #F0F0F0;
+      --cor-frente-cartao: #1A1A1A;
+      --cor-verso-cartao: #E50914;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background: linear-gradient(135deg, #f54ea2, #ff7676, #f7b733, #4ab3f4, #0077ff);
+      background-size: 800% 800%;
+      animation: gradientMove 8s ease infinite;
+      font-family: 'Bai Jamjuree', sans-serif;
+      padding-bottom: 3rem;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+    }
+    @keyframes gradientMove {
+      0%{background-position:0% 50%}
+      50%{background-position:100% 50%}
+      100%{background-position:0% 50%}
+    }
+    #pista {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      padding: 4rem 2rem;
+      max-width: 1200px;
+      width: 100%;
+    }
+    #pista > .full-width {
+      grid-column: span 3;
+      width: 100%;
+    }
+    .cartao-turbo {
+      width: 100%;
+      height: 200px;
+      perspective: 1000px;
+    }
+    .motor {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transition: transform 0.4s ease;
+      transform-style: preserve-3d;
+      cursor: pointer;
+      box-shadow: 0 8px 15px rgba(0,0,0,0.3);
+      border-radius: 1rem;
+    }
+    /* Flip no hover e se tiver classe flipped */
+    .cartao-turbo:hover .motor,
+    .motor.flipped {
+      transform: rotateY(180deg);
+    }
+    .motor__face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 1rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+      backface-visibility: hidden;
+      user-select: none;
+      box-sizing: border-box;
+    }
+    .motor__pergunta {
+      background-color: var(--cor-frente-cartao);
+      color: var(--cor-texto);
+      padding-top: 3rem;
+      box-shadow: inset 0 0 10px #007bffaa;
+    }
+    .motor__resposta {
+      background-color: var(--cor-verso-cartao);
+      color: white;
+      transform: rotateY(180deg);
+      box-shadow: inset 0 0 10px #e50914cc;
+    }
+    .motor__pergunta h3 {
+      position: absolute;
+      top: 0.8rem;
+      left: 1rem;
+      background: rgba(0, 123, 255, 0.9);
+      color: white;
+      padding: 0.3rem 1rem;
+      border-radius: 30px / 50%;
+      font-weight: 700;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      user-select: none;
+      box-shadow: 0 0 8px rgba(0, 123, 255, 0.7);
+      z-index: 10;
+    }
+    .motor__face p {
+      text-align: center;
+      font-size: 1.1rem;
+      line-height: 1.3;
+      margin-top: 0.5rem;
+      user-select: none;
+      padding: 0 1rem;
+    }
+    footer {
+      background-color: #0d0d0dcc;
+      color: white;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      height: 2rem;
+      text-align: center;
+      font-size: 0.8rem;
+      line-height: 2rem;
+      user-select: none;
+    }
+    @media(max-width: 650px) {
+      #pista {
+        grid-template-columns: 1fr;
+      }
+      #pista > .full-width {
+        grid-column: span 1;
+      }
+      .cartao-turbo {
+        height: 180px;
+      }
+    }
+  </style>
 </head>
 <body>
 
@@ -11,6 +142,72 @@
 
   <footer>🏁 Oficina Turbo • Flashcards Automotivos</footer>
 
-  <script src="script.js"></script>
+  <script>
+    const perguntas = [
+      { categoria: 'Mecânica', pergunta: 'Qual a função do sistema de suspensão?', resposta: 'Absorver impactos e manter a estabilidade do carro em movimento.' },
+      { categoria: 'Curiosidades', pergunta: 'Qual é o carro mais rápido do mundo em 2024?', resposta: 'Bugatti Chiron Super Sport 300+ — mais de 490 km/h.' },
+      { categoria: 'Manutenção', pergunta: 'Por que trocar o óleo regularmente?', resposta: 'Para lubrificar o motor, evitar superaquecimento e reduzir o desgaste.' },
+      { categoria: 'Velocidade', pergunta: 'O que é o tempo de aceleração 0-100 km/h?', resposta: 'É o tempo que o carro leva para ir de parado até 100 km/h.' },
+      { categoria: 'Peças', pergunta: 'Qual a função do catalisador?', resposta: 'Reduzir a emissão de gases poluentes pelo escapamento.' },
+      { categoria: 'História', pergunta: 'Quem inventou o motor de combustão interna?', resposta: 'Nikolaus Otto, em 1876.' },
+      { categoria: 'Corrida', pergunta: 'O que significa “DRS” na Fórmula 1?', resposta: 'Sistema de Redução de Arrasto para facilitar ultrapassagens.' },
+      { categoria: 'Segurança', pergunta: 'Para que serve o sistema ABS?', resposta: 'Evitar o travamento das rodas em frenagens bruscas.' },
+      { categoria: 'Motor', pergunta: 'Qual a diferença entre motor aspirado e turbo?', resposta: 'Turbo usa compressão de ar para mais potência, aspirado não.' },
+      { categoria: 'Manutenção', pergunta: 'Quando trocar as pastilhas de freio?', resposta: 'Quando estiverem com menos de 3mm de material ou com ruídos.' },
+      { categoria: 'Curiosidades', pergunta: 'Qual carro é conhecido como “muscle car”?', resposta: 'Carros americanos potentes dos anos 60 e 70, como o Ford Mustang.' },
+      { categoria: 'Velocidade', pergunta: 'O que é o “torque” em um carro?', resposta: 'Força de giro do motor que determina a aceleração.' },
+      { categoria: 'Tecnologia', pergunta: 'O que é um câmbio CVT?', resposta: 'Câmbio automático com variação contínua, sem marchas fixas.' },
+      { categoria: 'Peças', pergunta: 'Para que serve o radiador?', resposta: 'Resfriar o motor mantendo a temperatura ideal.' },
+      { categoria: 'Corrida', pergunta: 'Qual é a pista mais famosa da Fórmula 1?', resposta: 'Circuito de Mônaco.' },
+      { categoria: 'História', pergunta: 'Qual foi o primeiro carro produzido em massa?', resposta: 'Ford Modelo T.' },
+      { categoria: 'Segurança', pergunta: 'O que é controle de estabilidade?', resposta: 'Sistema que ajuda a manter o carro na trajetória desejada.' },
+      { categoria: 'Manutenção', pergunta: 'Qual a importância do alinhamento?', resposta: 'Evitar desgaste irregular dos pneus e melhorar a dirigibilidade.' },
+      { categoria: 'Velocidade', pergunta: 'O que é overboost em motores turbo?', resposta: 'Aumento temporário da pressão do turbo para mais potência.' },
+      { categoria: 'Inovação', pergunta: 'O que é um carro híbrido?', resposta: 'Veículo que usa motor a combustão e motor elétrico para melhor eficiência.' }
+    ];
+
+    const pista = document.getElementById('pista');
+
+    perguntas.forEach((item, idx) => {
+      const cartao = document.createElement('div');
+      cartao.className = 'cartao-turbo';
+
+      // A cada 7º cartão, ocupa a linha inteira
+      if ((idx + 1) % 7 === 0) {
+        cartao.classList.add('full-width');
+      }
+
+      cartao.innerHTML = `
+        <div class="motor" tabindex="0" aria-label="Flashcard ${item.categoria}: ${item.pergunta}">
+          <div class="motor__face motor__pergunta">
+            <h3>${item.categoria}</h3>
+            <p>${item.pergunta}</p>
+          </div>
+          <div class="motor__face motor__resposta">
+            <h3>Resposta</h3>
+            <p>${item.resposta}</p>
+          </div>
+        </div>
+      `;
+
+      pista.appendChild(cartao);
+
+      const motor = cartao.querySelector('.motor');
+
+      // Toggle flip no clique para mobile
+      motor.addEventListener('click', () => {
+        motor.classList.toggle('flipped');
+      });
+
+      // Acessibilidade: toggle flip no Enter ou espaço
+      motor.addEventListener('keydown', e => {
+        if(e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          motor.classList.toggle('flipped');
+        }
+      });
+    });
+  </script>
+
 </body>
 </html>
